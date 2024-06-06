@@ -22,6 +22,10 @@ class Reflection_Spectrum : public obscura::DM_Distribution
 	//Constructors
 	Reflection_Spectrum(const Simulation_Data& simulation_data, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, double mDM, int iso_ring = 0);
 
+// data, minimum_speed, highest_speed, reflection_ratio
+
+	Reflection_Spectrum(std::vector<libphysica::DataPoint> data, double minimum_speed, double highest_speed, double reflection_ratio, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, double mDM, int iso_ring = 0);
+
 	virtual double PDF_Speed(double v) override;
 
 	double Differential_Spectrum(double v);

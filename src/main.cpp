@@ -82,6 +82,9 @@ int main(int argc, char* argv[])
 			if(mpi_rank == 0)
 				libphysica::Export_Function(cfg.results_path + "Differential_Energy_Spectrum.txt", dR_dE, energies, {keV, 1.0 / keV / kg / year});
 
+			// Export S2 binned signal rate to file
+            // libphysica::Export_List(TOP_LEVEL_DIR "results/" + cfg.ID + "/binned_signals" + ".txt", cfg.DM_detector->DM_Signals_Binned(*cfg.DM, spectrum), 1);
+
 			// Compute p value for chosen experiment
 			double p = cfg.DM_detector->P_Value(*cfg.DM, spectrum);
 			libphysica::Print_Box("p = " + std::to_string(libphysica::Round(p)), 1, mpi_rank);

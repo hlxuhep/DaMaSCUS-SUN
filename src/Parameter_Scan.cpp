@@ -52,6 +52,24 @@ void Configuration::Import_Parameter_Scan_Parameter()
 {
 	try
 	{
+		import_data = config.lookup("import_data")
+	}
+	catch(const SettingNotFoundException& nfex)
+	{
+		std::cerr << "No 'import_data' setting in configuration file." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	try
+	{
+		import_data_type = config.lookup("import_data_type").c_str()
+	}
+	catch(const SettingNotFoundException& nfex)
+	{
+		std::cerr << "No 'import_data_type' setting in configuration file." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	try
+	{
 		sample_size = config.lookup("sample_size");
 	}
 	catch(const SettingNotFoundException& nfex)
@@ -320,13 +338,81 @@ void Configuration::Print_Summary(int mpi_rank)
 
 double Compute_p_Value(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points, int mpi_rank)
 {
-	double u_min = detector.Minimum_DM_Speed(DM);
+//	double u_min = detector.Minimum_DM_Speed(DM);
+	double u_min = 0.0;
 
 	solar_model.Interpolate_Total_DM_Scattering_Rate(DM, rate_interpolation_points, rate_interpolation_points);
 	Simulation_Data data_set(sample_size, u_min);
 	data_set.Generate_Data(DM, solar_model, halo_model);
 	data_set.Print_Summary(mpi_rank);
 	Reflection_Spectrum spectrum(data_set, solar_model, halo_model, DM.mass);
+	double p = detector.P_Value(DM, spectrum);
+	return (p < 1.0e-100) ? 0.0 : p;
+}
+
+// compute p value and also export the data
+
+double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points, int mpi_rank, int row, int column)
+{
+//	double u_min = detector.Minimum_DM_Speed(DM);
+	double u_min = 0.0;
+
+	solar_model.Interpolate_Total_DM_Scattering_Rate(DM, rate_interpolation_points, rate_interpolation_points);
+	Simulation_Data data_set(sample_size, u_min);
+	data_set.Generate_Data(DM, solar_model, halo_model);
+	data_set.Print_Summary(mpi_rank);
+	Reflection_Spectrum spectrum(data_set, solar_model, halo_model, DM.mass);
+
+    double data_minimum_speed = data_set.Minimum_Speed();
+	double data_highest_speed = data_set.Highest_Speed(0);
+	double reflection_ratio   = data_set.Reflection_Ratio(0);
+    std::vector<double> speednratio = {data_minimum_speed, data_highest_speed, reflection_ratio};
+
+	unsigned int N_data_set_data = (data_set.data[0]).size();
+	std::vector<double> data_value(N_data_set_data);
+	std::vector<double> data_weight(N_data_set_data);
+
+	for(unsigned int i = 0; i < N_data_set_data; i++)
+	{
+    	data_value[i] = data_set.data[0][i].value;
+		data_weight[i] = data_set.data[0][i].weight;
+	}
+
+	libphysica::Export_List(TOP_LEVEL_DIR "flux/speednratio_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", speednratio, 1);
+    libphysica::Export_List(TOP_LEVEL_DIR "flux/data_value_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_value, 1);
+	libphysica::Export_List(TOP_LEVEL_DIR "flux/data_weight_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_weight, 1);
+
+	double p = detector.P_Value(DM, spectrum);
+	return (p < 1.0e-100) ? 0.0 : p;
+}
+
+// compute p value directly from imported data
+
+double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points, int mpi_rank, int row, int column)
+{
+//	double u_min = detector.Minimum_DM_Speed(DM);
+	double u_min = 0.0;
+
+// import everything
+
+    std::vector<double> speednratio = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/speednratio_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
+    std::vector<double> data_value = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/data_value_" + std::to_string(row) + "_" + std::to_string(column) + ".txt",  1);
+	std::vector<double> data_weight = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/data_weight_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
+    double minimum_speed = speednratio[0];
+	double highest_speed = speednratio[1];
+	double reflection_ratio = speednratio[2];
+
+    std::vector<libphysica::DataPoint> data;
+
+	unsigned int N_data = data_value.size();
+	for(unsigned int i = 0; i < N_data; i++)
+	{
+		libphysica::DataPoint datatemp(data_value[i], data_weight[i]);
+    	data.push_back(datatemp);
+	}
+	
+    Reflection_Spectrum spectrum(data, minimum_speed, highest_speed, reflection_ratio, solar_model, halo_model, DM.mass);
+
 	double p = detector.P_Value(DM, spectrum);
 	return (p < 1.0e-100) ? 0.0 : p;
 }
@@ -562,7 +648,14 @@ void Parameter_Scan::Perform_STA_Scan(obscura::DM_Particle& DM, obscura::DM_Dete
 			Print_Grid(mpi_rank, row, column);
 			MPI_Barrier(MPI_COMM_WORLD);
 
-			p = Compute_p_Value(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank);
+            if(import_data)
+			{
+			    p = Compute_p_Value_import_data(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, row, column);
+			}
+			else
+			{
+                p = Compute_p_Value(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank);
+			}
 
 			p_value_grid[row][column] = p;
 			libphysica::Export_Table(results_path + "P_Values_Grid.txt", p_value_grid);
@@ -631,8 +724,15 @@ void Parameter_Scan::Perform_Full_Scan(obscura::DM_Particle& DM, obscura::DM_Det
 							  << std::endl;
 				Print_Grid(mpi_rank, row, column);
 				MPI_Barrier(MPI_COMM_WORLD);
-
-				p = Compute_p_Value(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank);
+                
+				if(import_data)
+				{
+				    p = Compute_p_Value_import_data(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, row, column);
+				}
+				else
+				{
+                    p = Compute_p_Value(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank);
+				}
 
 				p_value_grid[row][column] = p;
 				libphysica::Export_Table(results_path + "P_Values_Grid.txt", p_value_grid);

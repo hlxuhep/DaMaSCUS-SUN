@@ -29,8 +29,8 @@ include(FetchContent)
 # obscura
 set(OBSCURA_DIR ${EXTERNAL_DIR}/obscura)
 FetchContent_Declare(obscura
-  GIT_REPOSITORY https://github.com/temken/obscura.git
-  GIT_TAG origin/dev
+  GIT_REPOSITORY https://github.com/hlxuhep/obscura.git
+  GIT_TAG origin/hailin_custom
   SOURCE_DIR "${OBSCURA_DIR}"
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=Release -DCODE_COVERAGE=OFF")
 FetchContent_GetProperties(obscura)

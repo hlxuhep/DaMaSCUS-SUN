@@ -19,6 +19,22 @@ Reflection_Spectrum::Reflection_Spectrum(const Simulation_Data& simulation_data,
 	total_reflection_flux					   = total_reflection_rate * 1.0 / 4.0 / M_PI / distance / distance * number_of_isoreflection_rings;
 }
 
+// construct from data, minimum speed, highest speed, reflection ratio
+
+Reflection_Spectrum::Reflection_Spectrum(std::vector<libphysica::DataPoint> data, double minimum_speed, double highest_speed, double reflection_ratio, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, double mDM, int iso_ring)
+: DM_Distribution("Reflection spectrum", 0.0, minimum_speed, 1.05 * highest_speed), distance(AU)
+{
+	kde_speed								   = libphysica::Perform_KDE(data, v_domain[0], v_domain[1]);
+	total_entering_rate						   = DM_Entering_Rate(solar_model, halo_model, mDM);
+	total_reflection_rate					   = reflection_ratio * total_entering_rate;
+	unsigned int number_of_isoreflection_rings = 1;
+	total_reflection_flux					   = total_reflection_rate * 1.0 / 4.0 / M_PI / distance / distance * number_of_isoreflection_rings;
+}
+
+
+
+
+
 double Reflection_Spectrum::PDF_Speed(double u)
 {
 	if(u < v_domain[0] || u > v_domain[1])

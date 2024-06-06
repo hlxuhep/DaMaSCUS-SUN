@@ -29,6 +29,11 @@ class Configuration : public obscura::Configuration
 	double cross_section_min, cross_section_max;
 	bool compute_halo_constraints, perform_full_scan, use_medium_effects;
 	double zeta;
+	
+//  to import data
+	bool import_data
+	std::string import_data_type
+
 	explicit Configuration(std::string cfg_filename, int MPI_rank = 0);
 
 	void Print_Summary(int mpi_rank = 0) override;
@@ -36,8 +41,13 @@ class Configuration : public obscura::Configuration
 
 // 2. 	Class to perform parameter scans in the (m_DM, sigma)-plane to search for equal-p-value contours.
 //		Either a full scan, or more efficiently and targeted via the square tracing algorithm (STA).
+//      Compute p value and export flux to filepath labelled by row and column
 
 double Compute_p_Value(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0);
+
+double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
+
+double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
 
 class Parameter_Scan
 {
