@@ -46,7 +46,7 @@ double Compute_p_Value(unsigned int sample_size, obscura::DM_Particle& DM, obscu
 
 double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
 
-double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
+double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, std::string import_data_type, int row = 0, int column = 0);
 
 class Parameter_Scan
 {
