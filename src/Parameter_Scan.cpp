@@ -418,8 +418,8 @@ double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particl
 }
 
 // 2. 	Class to perform parameter scans in the (m_DM, sigma)-plane to search for equal-p-value contours.
-Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points, double CL)
-: DM_masses(masses), couplings(coupl), sample_size(samplesize), scattering_rate_interpolation_points(interpolation_points), certainty_level(CL)
+Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points, double CL, bool importdata, std::string importdatatype)
+: DM_masses(masses), couplings(coupl), sample_size(samplesize), scattering_rate_interpolation_points(interpolation_points), certainty_level(CL), import_data(importdata), import_data_type(importdatatype)
 {
 	results_path = TOP_LEVEL_DIR "results/" + ID + "/";
 	p_value_grid = std::vector<std::vector<double>>(couplings.size(), std::vector<double>(DM_masses.size(), -1.0));
@@ -432,7 +432,7 @@ Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vec
 }
 
 Parameter_Scan::Parameter_Scan(Configuration& config)
-: Parameter_Scan(libphysica::Log_Space(config.constraints_mass_min, config.constraints_mass_max, config.constraints_masses), libphysica::Log_Space(config.cross_section_min, config.cross_section_max, config.cross_sections), config.ID, config.sample_size, config.interpolation_points, config.constraints_certainty)
+: Parameter_Scan(libphysica::Log_Space(config.constraints_mass_min, config.constraints_mass_max, config.constraints_masses), libphysica::Log_Space(config.cross_section_min, config.cross_section_max, config.cross_sections), config.ID, config.sample_size, config.interpolation_points, config.constraints_certainty, config.import_data, config.import_data_type)
 {
 }
 

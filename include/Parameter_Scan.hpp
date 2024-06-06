@@ -38,10 +38,6 @@ class Configuration : public obscura::Configuration
 // 2. 	Class to perform parameter scans in the (m_DM, sigma)-plane to search for equal-p-value contours.
 //		Either a full scan, or more efficiently and targeted via the square tracing algorithm (STA).
 
-// to control whether to import data or not, or even to export data if you like (requires modification of .cpp)	
-bool import_data;
-std::string import_data_type;
-
 double Compute_p_Value(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0);
 
 double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
@@ -59,6 +55,9 @@ class Parameter_Scan
 	std::vector<std::vector<double>> p_value_grid;
 	// Check for progress of a previous, incomplete parameter scan to import and continue
 	void Import_P_Values();
+	// to control whether to import data or not, or even to export data if you like (requires modification of .cpp)	
+    bool import_data;
+    std::string import_data_type;
 
 	// Square tracing algorithm (STA) functions
 	bool STA_Point_On_Grid(int row, int column);
