@@ -388,7 +388,7 @@ double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particl
 
 // compute p value directly from imported data
 
-double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points, int mpi_rank, std::string import_data_type, int row, int column)
+double Compute_p_Value_import_data(unsigned int sample_size, unsigned int rate_interpolation_points, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, int mpi_rank, std::string import_data_type, int row, int column)
 {
 //	double u_min = detector.Minimum_DM_Speed(DM);
 	double u_min = 0.0;
@@ -418,8 +418,8 @@ double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particl
 }
 
 // 2. 	Class to perform parameter scans in the (m_DM, sigma)-plane to search for equal-p-value contours.
-Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points, double CL, bool importdata, std::string importdatatype)
-: DM_masses(masses), couplings(coupl), sample_size(samplesize), scattering_rate_interpolation_points(interpolation_points), certainty_level(CL), import_data(importdata), import_data_type(importdatatype)
+Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, bool importdata, std::string importdatatype, unsigned int interpolation_points, double CL)
+: DM_masses(masses), couplings(coupl), sample_size(samplesize), import_data(importdata), import_data_type(importdatatype), scattering_rate_interpolation_points(interpolation_points), certainty_level(CL)
 {
 	results_path = TOP_LEVEL_DIR "results/" + ID + "/";
 	p_value_grid = std::vector<std::vector<double>>(couplings.size(), std::vector<double>(DM_masses.size(), -1.0));
@@ -432,7 +432,7 @@ Parameter_Scan::Parameter_Scan(const std::vector<double>& masses, const std::vec
 }
 
 Parameter_Scan::Parameter_Scan(Configuration& config)
-: Parameter_Scan(libphysica::Log_Space(config.constraints_mass_min, config.constraints_mass_max, config.constraints_masses), libphysica::Log_Space(config.cross_section_min, config.cross_section_max, config.cross_sections), config.ID, config.sample_size, config.interpolation_points, config.constraints_certainty, config.import_data, config.import_data_type)
+: Parameter_Scan(libphysica::Log_Space(config.constraints_mass_min, config.constraints_mass_max, config.constraints_masses), libphysica::Log_Space(config.cross_section_min, config.cross_section_max, config.cross_sections), config.ID, config.sample_size, config.import_data, config.import_data_type, config.interpolation_points, config.constraints_certainty)
 {
 }
 
@@ -650,7 +650,7 @@ void Parameter_Scan::Perform_STA_Scan(obscura::DM_Particle& DM, obscura::DM_Dete
 
             if(import_data)
 			{
-			    p = Compute_p_Value_import_data(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, import_data_type, row, column);
+			    p = Compute_p_Value_import_data(sample_size, import_data_type, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, row, column);
 			}
 			else
 			{
@@ -727,7 +727,7 @@ void Parameter_Scan::Perform_Full_Scan(obscura::DM_Particle& DM, obscura::DM_Det
                 
 				if(import_data)
 				{
-				    p = Compute_p_Value_import_data(sample_size, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, import_data_type, row, column);
+				    p = Compute_p_Value_import_data(sample_size, import_data_type, DM, detector, solar_model, halo_model, scattering_rate_interpolation_points, mpi_rank, row, column);
 				}
 				else
 				{

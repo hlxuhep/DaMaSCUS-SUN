@@ -46,7 +46,7 @@ double Compute_p_Value(unsigned int sample_size, obscura::DM_Particle& DM, obscu
 
 double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
 
-double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, std::string import_data_type, int row = 0, int column = 0);
+double Compute_p_Value_import_data(unsigned int sample_size, std::string import_data_type, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, unsigned int rate_interpolation_points = 1000, int mpi_rank = 0, int row = 0, int column = 0);
 
 class Parameter_Scan
 {
@@ -73,7 +73,7 @@ class Parameter_Scan
 	std::vector<double> Find_Contour_Point(int row, int column, int row_previous, int column_previous, double p_critical);
 
   public:
-	Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points = 1000, double CL = 0.90, bool importdata = false, std::string importdatatype);
+	Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, bool importdata, std::string importdatatype, unsigned int interpolation_points = 1000, double CL = 0.90);
 	Parameter_Scan(Configuration& config);
 
 	void Perform_Full_Scan(obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, int mpi_rank = 0);
