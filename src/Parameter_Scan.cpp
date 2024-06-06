@@ -388,7 +388,7 @@ double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particl
 
 // compute p value directly from imported data
 
-double Compute_p_Value_import_data(unsigned int sample_size, unsigned int rate_interpolation_points, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, int mpi_rank, std::string import_data_type, int row, int column)
+double Compute_p_Value_import_data(unsigned int sample_size, std::string import_data_type, unsigned int rate_interpolation_points, obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, int mpi_rank, int row, int column)
 {
 //	double u_min = detector.Minimum_DM_Speed(DM);
 	double u_min = 0.0;
