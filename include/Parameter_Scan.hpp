@@ -30,6 +30,10 @@ class Configuration : public obscura::Configuration
 	bool compute_halo_constraints, perform_full_scan, use_medium_effects;
 	double zeta;
 
+	// to control whether to import data or not, or even to export data if you like (requires modification of .cpp)	
+    bool import_data;
+    std::string import_data_type;
+
 	explicit Configuration(std::string cfg_filename, int MPI_rank = 0);
 
 	void Print_Summary(int mpi_rank = 0) override;
@@ -69,7 +73,7 @@ class Parameter_Scan
 	std::vector<double> Find_Contour_Point(int row, int column, int row_previous, int column_previous, double p_critical);
 
   public:
-	Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points = 1000, double CL = 0.95);
+	Parameter_Scan(const std::vector<double>& masses, const std::vector<double>& coupl, std::string ID, unsigned int samplesize, unsigned int interpolation_points = 1000, double CL = 0.90, bool importdata = false, std::string importdatatype);
 	Parameter_Scan(Configuration& config);
 
 	void Perform_Full_Scan(obscura::DM_Particle& DM, obscura::DM_Detector& detector, Solar_Model& solar_model, obscura::DM_Distribution& halo_model, int mpi_rank = 0);
