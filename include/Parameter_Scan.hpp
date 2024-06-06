@@ -31,8 +31,8 @@ class Configuration : public obscura::Configuration
 	double zeta;
 	
 //  to import data
-	bool import_data
-	std::string import_data_type
+	bool import_data;
+	std::string import_data_type;
 
 	explicit Configuration(std::string cfg_filename, int MPI_rank = 0);
 

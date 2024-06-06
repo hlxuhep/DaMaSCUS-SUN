@@ -52,7 +52,7 @@ void Configuration::Import_Parameter_Scan_Parameter()
 {
 	try
 	{
-		import_data = config.lookup("import_data")
+		import_data = config.lookup("import_data");
 	}
 	catch(const SettingNotFoundException& nfex)
 	{
@@ -61,7 +61,7 @@ void Configuration::Import_Parameter_Scan_Parameter()
 	}
 	try
 	{
-		import_data_type = config.lookup("import_data_type").c_str()
+		import_data_type = config.lookup("import_data_type").c_str();
 	}
 	catch(const SettingNotFoundException& nfex)
 	{
