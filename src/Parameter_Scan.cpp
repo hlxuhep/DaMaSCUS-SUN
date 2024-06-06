@@ -378,9 +378,9 @@ double Compute_p_Value_export_data(unsigned int sample_size, obscura::DM_Particl
 		data_weight[i] = data_set.data[0][i].weight;
 	}
 
-	libphysica::Export_List(TOP_LEVEL_DIR "flux/speednratio_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", speednratio, 1);
-    libphysica::Export_List(TOP_LEVEL_DIR "flux/data_value_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_value, 1);
-	libphysica::Export_List(TOP_LEVEL_DIR "flux/data_weight_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_weight, 1);
+	libphysica::Export_List(TOP_LEVEL_DIR "data/flux/speednratio_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", speednratio, 1);
+    libphysica::Export_List(TOP_LEVEL_DIR "data/flux/data_value_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_value, 1);
+	libphysica::Export_List(TOP_LEVEL_DIR "data/flux/data_weight_0umin" + std::to_string(row) + "_" + std::to_string(column) + ".txt", data_weight, 1);
 
 	double p = detector.P_Value(DM, spectrum);
 	return (p < 1.0e-100) ? 0.0 : p;
@@ -395,9 +395,9 @@ double Compute_p_Value_import_data(unsigned int sample_size, obscura::DM_Particl
 
 // import everything
 
-    std::vector<double> speednratio = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/speednratio_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
-    std::vector<double> data_value = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/data_value_" + std::to_string(row) + "_" + std::to_string(column) + ".txt",  1);
-	std::vector<double> data_weight = libphysica::Import_List(TOP_LEVEL_DIR + import_data_type + "_flux/data_weight_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
+    std::vector<double> speednratio = libphysica::Import_List(TOP_LEVEL_DIR "data/" + import_data_type + "_flux/speednratio_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
+    std::vector<double> data_value = libphysica::Import_List(TOP_LEVEL_DIR "data/" + import_data_type + "_flux/data_value_" + std::to_string(row) + "_" + std::to_string(column) + ".txt",  1);
+	std::vector<double> data_weight = libphysica::Import_List(TOP_LEVEL_DIR "data/" + import_data_type + "_flux/data_weight_" + std::to_string(row) + "_" + std::to_string(column) + ".txt", 1);
     double minimum_speed = speednratio[0];
 	double highest_speed = speednratio[1];
 	double reflection_ratio = speednratio[2];
