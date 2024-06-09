@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	// Run some custom code
-	else
+	else if(cfg.run_mode == "PDF and sample")
 	{
 		std::random_device rd;
 		std::mt19937 PRNG(rd());
@@ -203,6 +203,32 @@ int main(int argc, char* argv[])
 		}
 		f.close();
 		g.close();
+	}
+	else
+	{
+		double u_min = 0.0;
+		// double u_min = cfg.DM_detector->Minimum_DM_Speed(*cfg.DM);
+		if(mpi_rank == 0)
+			std::cout << "\nDM parameters:" << std::endl
+					  << "\tm_DM [MeV]:\t" << libphysica::Round(In_Units(cfg.DM->mass, MeV)) << std::endl
+					  << "\tsigma_p [cm2]:\t" << libphysica::Round(In_Units(cfg.DM->Get_Interaction_Parameter("Nuclei"), cm * cm)) << std::endl
+					  << "\tsigma_e [cm2]:\t" << libphysica::Round(In_Units(cfg.DM->Get_Interaction_Parameter("Electrons"), cm * cm)) << std::endl
+					  << std::endl;
+
+		// Export recoil energy spectrum dR/dE to file (Halo DM)
+		std::function<double(double)> dR_dE = [&spectrum, &cfg](double E) {
+			return cfg.DM_detector->dRdE(E, *cfg.DM, spectrum);
+		};
+		std::vector<double> energies = libphysica::Log_Space(0.1 * eV, cfg.DM_detector->Maximum_Energy_Deposit(*cfg.DM, *cfg.DM_distr), 300);
+		if(mpi_rank == 0)
+			libphysica::Export_Function(cfg.results_path + "Differential_Energy_Spectrum_Halo.txt", dR_dE, energies, {keV, 1.0 / keV / kg / year});
+
+		// Export binned signal rate to file
+            libphysica::Export_List(TOP_LEVEL_DIR "results/" + cfg.ID + "/binned_signals_Halo" + ".txt", cfg.DM_detector->DM_Signals_Binned(*cfg.DM, *cfg.DM_distr), 1);
+
+		// Compute p value for chosen experiment
+		double p = cfg.DM_detector->P_Value(*cfg.DM, *cfg.DM_distr);
+		ibphysica::Print_Box("p = " + std::to_string(libphysica::Round(p)), 1, mpi_rank);
 	}
 
 	////////////////////////////////////////////////////////////////////////
