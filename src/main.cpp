@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
 		};
 		std::vector<double> energies = libphysica::Log_Space(0.1 * eV, cfg.DM_detector->Maximum_Energy_Deposit(*cfg.DM, *cfg.DM_distr), 300);
 		if(mpi_rank == 0)
-			libphysica::Export_Function(cfg.results_path + "Differential_Energy_Spectrum_Halo.txt", dR_dE, energies, {keV, 1.0 / keV / kg / year});
+			libphysica::Export_Function(cfg.results_path + "Differential_Energy_Spectrum_Halo.txt", dR_dE, energies, {eV, 1.0 / eV / kg / year});
 
 		// Export binned signal rate to file
             libphysica::Export_List(TOP_LEVEL_DIR "results/" + cfg.ID + "/binned_signals_Halo" + ".txt", cfg.DM_detector->DM_Signals_Binned(*cfg.DM, *cfg.DM_distr), 1);
