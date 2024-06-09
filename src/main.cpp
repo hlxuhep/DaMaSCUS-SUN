@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
 
 		// Compute p value for chosen experiment
 		double p = cfg.DM_detector->P_Value(*cfg.DM, *cfg.DM_distr);
-		ibphysica::Print_Box("p = " + std::to_string(libphysica::Round(p)), 1, mpi_rank);
+		libphysica::Print_Box("p = " + std::to_string(libphysica::Round(p)), 1, mpi_rank);
 	}
 
 	////////////////////////////////////////////////////////////////////////
