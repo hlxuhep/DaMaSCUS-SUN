@@ -182,7 +182,7 @@ void Configuration::Import_Parameter_Scan_Parameter()
 		std::cerr << "No 'perform_full_scan' setting in configuration file." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	if(run_mode != "Parameter point" && run_mode != "Parameter scan" && run_mode != "Custom")
+	if(run_mode != "Parameter point" && run_mode != "Parameter scan" && run_mode != "PDF and sample" && run_mode != "custom")
 	{
 		std::cerr << "Error in Configuration::Import_Parameter_Scan_Parameter(): Run mode " << run_mode << " not recognized." << std::endl;
 		std::exit(EXIT_FAILURE);
