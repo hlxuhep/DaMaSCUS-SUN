@@ -216,8 +216,8 @@ int main(int argc, char* argv[])
 					  << std::endl;
 
 		// Export recoil energy spectrum dR/dE to file (Halo DM)
-		std::function<double(double)> dR_dE = [&spectrum, &cfg](double E) {
-			return cfg.DM_detector->dRdE(E, *cfg.DM, spectrum);
+		std::function<double(double)> dR_dE = [&cfg](double E) {
+			return cfg.DM_detector->dRdE(E, *cfg.DM, *cfg.DM_distr);
 		};
 		std::vector<double> energies = libphysica::Log_Space(0.1 * eV, cfg.DM_detector->Maximum_Energy_Deposit(*cfg.DM, *cfg.DM_distr), 300);
 		if(mpi_rank == 0)
